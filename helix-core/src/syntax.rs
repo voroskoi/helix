@@ -486,6 +486,8 @@ impl Syntax {
                 tree.edit(edit);
             }
         }
+        
+        // use the changeset to update all layers markers
 
         PARSER.with(|ts_parser| {
             let ts_parser = &mut ts_parser.borrow_mut();
@@ -528,7 +530,6 @@ impl Syntax {
                                 intersect_ranges(&layer.ranges, &[content_node], include_children);
 
                             if !ranges.is_empty() {
-                                log::info!("{} {:?}", language_name, ranges);
                                 injections.push((config, ranges));
                             }
                         }
@@ -580,6 +581,8 @@ impl Syntax {
                 let depth = layer.depth + 1;
                 // TODO: can't inline this since matches borrows self.layers
                 for (config, ranges) in injections {
+                    // TODO: using ranges + config.language try to find a matching layer
+                                        
                     let layer_id = self.layers.insert(LanguageLayer {
                         tree: None,
                         config,
@@ -588,15 +591,19 @@ impl Syntax {
                     });
                     queue.push_back(layer_id);
                 }
+                // TODO: mark the layer as touched
+
+                // TODO: pre-process local scopes at this time, rather than highlight?
+                // would solve problems with locals not working across boundaries
             }
 
             // Return the cursor back in the pool.
             ts_parser.cursors.push(cursor);
+            
+            // TODO: delete all untouched layers
 
-            Ok(()) // so we can use the try operator
-        })?;
-
-        Ok(())
+            Ok(())
+        })
     }
 
     // fn buffer_changed -> call layer.update(range, new_text) on root layer and then all marker layers
