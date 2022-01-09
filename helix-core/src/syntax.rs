@@ -559,6 +559,7 @@ impl Syntax {
             let ts_parser = &mut ts_parser.borrow_mut();
             let mut cursor = ts_parser.cursors.pop().unwrap_or_else(QueryCursor::new);
             // TODO: might need to set cursor range
+            cursor.set_byte_range(0..usize::MAX);
 
             let source_slice = source.slice(..);
 
@@ -736,8 +737,7 @@ impl Syntax {
 
                 // if reusing cursors & no range this resets to whole range
                 // TODO: handle intersect (range & layer.range)
-                // cursor_ref.set_byte_range(range.clone().unwrap_or(0..usize::MAX));
-                cursor_ref.set_byte_range(0..usize::MAX);
+                cursor_ref.set_byte_range(range.clone().unwrap_or(0..usize::MAX));
 
                 let mut captures = cursor_ref
                     .captures(
