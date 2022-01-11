@@ -729,6 +729,9 @@ impl Syntax {
                     highlighter.cursors.pop().unwrap_or_else(QueryCursor::new)
                 });
 
+                // TODO: if range doesn't overlap layer range, skip it
+                // we can calculate intersection and use it later for set_byte_range
+
                 // The `captures` iterator borrows the `Tree` and the `QueryCursor`, which
                 // prevents them from being moved. But both of these values are really just
                 // pointers, so it's actually ok to move them.
